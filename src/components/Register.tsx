@@ -3,57 +3,79 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Icon from "../assets/Fixando-logo.png";
 
-
-interface LoginForm {
+interface RegisterForm {
+  username: string;
   email: string;
   password: string;
 }
 
-
-function Login() {
+export default function Register() {
   const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setError,
     reset,
-  } = useForm<LoginForm>({
+    setError,
+  } = useForm<RegisterForm>({
     mode: "onTouched",
-    defaultValues: { email: "", password: "" },
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+    },
   });
 
-  // Simula chamada de API
-  const fakeLogin = (data: LoginForm) =>
-    new Promise<{ ok: boolean; message?: string }>((resolve) => {
+  // Simulação de API — depois tu troca pelo fetch real
+  const fakeRegister = async (data: RegisterForm) => {
+    return new Promise<{ ok: boolean; message?: string }>((resolve) => {
       setTimeout(() => {
-        if (data.email === "user@test.com" && data.password === "123456") {
-          resolve({ ok: true });
+        if (data.email === "jaexiste@test.com") {
+          resolve({ ok: false, message: "Email já cadastrado" });
         } else {
-          resolve({ ok: false, message: "E-mail e/ou senha inválidas" });
+          resolve({ ok: true });
         }
-      }, 800);
+      }, 1000);
     });
+  };
 
-  const onSubmit = async (data: LoginForm) => {
-    const res = await fakeLogin(data);
+  const onSubmit = async (data: RegisterForm) => {
+    const res = await fakeRegister(data);
     if (!res.ok) {
       setError("email", { type: "server", message: res.message });
       return;
     }
     reset();
-    navigate("/home"); // vai pra home se login ok
+    navigate("/login"); // depois do cadastro, manda pro login
   };
 
   return (
     <div className="h-screen w-full bg-bg text-light flex flex-col items-center justify-center">
       <div className="bg-white text-black p-8 rounded-xl shadow-md w-[350px]">
-        <div className="flex justify-center ">
+        <div className="flex justify-center mb-6">
           <img className="w-32" src={Icon} alt="Logo" />
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          {/* EMAIL */}
+          {/* Nome de usuário */}
+          <label className="block text-sm font-medium mb-1">Nome de usuário</label>
+          <input
+            type="text"
+            {...register("username", {
+              required: "Nome de usuário é obrigatório",
+              minLength: { value: 3, message: "Mínimo 3 caracteres" },
+            })}
+            className={`w-full p-2 border outline-none rounded-md mb-2 ${
+              errors.username ? "border-red-500" : "border-gray-300"
+            }`}
+            placeholder="Username"
+          />
+          {errors.username && (
+            <p className="text-red-500 text-sm mb-3">{errors.username.message}</p>
+          )}
+
+          {/* Email */}
           <label className="block text-sm font-medium mb-1">Email</label>
           <input
             type="email"
@@ -64,17 +86,16 @@ function Login() {
                 message: "Email inválido",
               },
             })}
-            className={`w-full p-2 border border-gray-300 outline-none rounded-md mb-2 ${
+            className={`w-full p-2 border outline-none rounded-md mb-2 ${
               errors.email ? "border-red-500" : "border-gray-300"
             }`}
-            placeholder="exemplo@email.com"
-            
+            placeholder="Exemplo@email.com"
           />
           {errors.email && (
             <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>
           )}
 
-          {/* SENHA */}
+          {/* Senha */}
           <label className="block text-sm font-medium mb-1">Senha</label>
           <input
             type="password"
@@ -96,21 +117,16 @@ function Login() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="cursor-pointer w-full bg-orange text-white py-2 rounded-md hover:bg-accent transition disabled:opacity-60"
+            className="w-full cursor-pointer bg-orange text-white py-2 rounded-md hover:bg-accent transition disabled:opacity-60"
           >
-            {isSubmitting ? "Entrando..." : "Entrar"}
+            {isSubmitting ? "Registrando..." : "Registrar"}
           </button>
 
           <p className="text-gray-500 text-xs mt-3 text-center">
-            Não tem uma Conta? <a className="underline" href="/register">Clique Aqui.</a>
-          </p>
-          <p className="text-gray-500 text-xs mt-3 text-center">
-            Teste com: user@test.com / 123456
+          Já tem uma conta? <a className="underline" href="/login">Fazer Login</a>
           </p>
         </form>
       </div>
     </div>
   );
 }
-
-export default Login
