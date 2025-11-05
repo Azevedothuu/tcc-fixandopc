@@ -1,15 +1,16 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./components/Login";
-import Home from "./components/Home";
-import Register from "./components/Register";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import Register from "./pages/Register";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/home" element={<Home />} />  {/* Página inicial */}
-        <Route path="/login" element={<Login />} /> {/* Login como rota */}
-        <Route path="/register" element={<Register />} /> {/* Register como rota */}
+        <Route path="/login" element={<Login />} /> {/* Login  */}
+        <Route path="/register" element={<Register />} /> {/* Register  */}
+        <Route path="/" element={<Home />} />  {/* Página inicial */}
+        
 
       </Routes>
     </BrowserRouter>

@@ -42,7 +42,7 @@ function Login() {
       return;
     }
     reset();
-    navigate("/home"); // vai pra home se login ok
+    navigate("/"); // vai pra home se login ok
   };
 
   return (
