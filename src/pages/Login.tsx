@@ -1,17 +1,17 @@
-import {} from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Icon from "../assets/Fixando-logo.png";
-
+import Button from "../ui/Button";
+import { useUser } from "../context/UserContext"; // importa contexto
 
 interface LoginForm {
   email: string;
   password: string;
 }
 
-
 function Login() {
   const navigate = useNavigate();
+  const { login } = useUser(); // função do contexto
   const {
     register,
     handleSubmit,
@@ -36,14 +36,22 @@ function Login() {
     });
 
   const onSubmit = async (data: LoginForm) => {
-    const res = await fakeLogin(data);
-    if (!res.ok) {
-      setError("email", { type: "server", message: res.message });
-      return;
-    }
-    reset();
-    navigate("/"); // vai pra home se login ok
-  };
+  const res = await fakeLogin(data);
+  if (!res.ok) {
+    setError("email", { type: "server", message: res.message });
+    return;
+  }
+
+  reset();
+
+  
+  const userName = data.email ? data.email.split('@')[0] : "Usuário";
+  login(userName);
+
+
+  navigate("/"); // vai pra home
+};
+
 
   return (
     <div className="h-screen w-full bg-bg text-light flex flex-col items-center justify-center">
@@ -68,7 +76,6 @@ function Login() {
               errors.email ? "border-red-500" : "border-gray-300"
             }`}
             placeholder="exemplo@email.com"
-            
           />
           {errors.email && (
             <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>
@@ -93,16 +100,20 @@ function Login() {
             </p>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className="cursor-pointer w-full bg-orange text-white py-2 rounded-md hover:bg-accent transition disabled:opacity-60"
+            variant="primary"
+            className="w-full"
           >
             {isSubmitting ? "Entrando..." : "Entrar"}
-          </button>
+          </Button>
 
           <p className="text-gray-500 text-xs mt-3 text-center">
-            Não tem uma Conta? <a className="underline" href="/register">Clique Aqui.</a>
+            Não tem uma Conta?{" "}
+            <a className="underline" href="/register">
+              Clique Aqui.
+            </a>
           </p>
           <p className="text-gray-500 text-xs mt-3 text-center">
             Teste com: user@test.com / 123456
@@ -113,4 +124,4 @@ function Login() {
   );
 }
 
-export default Login
+export default Login;

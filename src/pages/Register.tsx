@@ -1,6 +1,6 @@
-import {} from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext"; // usa o contexto global de auth
 import Icon from "../assets/Fixando-logo.png";
 
 interface RegisterForm {
@@ -11,6 +11,7 @@ interface RegisterForm {
 
 export default function Register() {
   const navigate = useNavigate();
+  const { login } = useUser(); // pega a função login do contexto
 
   const {
     register,
@@ -34,6 +35,11 @@ export default function Register() {
         if (data.email === "jaexiste@test.com") {
           resolve({ ok: false, message: "Email já cadastrado" });
         } else {
+          // simula salvar user no "banco"
+          localStorage.setItem(
+            "user",
+            JSON.stringify({ username: data.username, email: data.email })
+          );
           resolve({ ok: true });
         }
       }, 1000);
@@ -46,8 +52,12 @@ export default function Register() {
       setError("email", { type: "server", message: res.message });
       return;
     }
+
+    // salva usuário no contexto (login automático)
+    login(data.username);
+
     reset();
-    navigate("/login"); // depois do cadastro, manda pro login
+    navigate("/"); // depois do registro, vai direto pra home
   };
 
   return (
@@ -89,7 +99,7 @@ export default function Register() {
             className={`w-full p-2 border outline-none rounded-md mb-2 ${
               errors.email ? "border-red-500" : "border-gray-300"
             }`}
-            placeholder="Exemplo@email.com"
+            placeholder="exemplo@email.com"
           />
           {errors.email && (
             <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>
@@ -109,9 +119,7 @@ export default function Register() {
             placeholder="********"
           />
           {errors.password && (
-            <p className="text-red-500 text-sm mb-3">
-              {errors.password.message}
-            </p>
+            <p className="text-red-500 text-sm mb-3">{errors.password.message}</p>
           )}
 
           <button
@@ -123,7 +131,10 @@ export default function Register() {
           </button>
 
           <p className="text-gray-500 text-xs mt-3 text-center">
-          Já tem uma conta? <a className="underline" href="/login">Fazer Login</a>
+            Já tem uma conta?{" "}
+            <a className="underline" href="/login">
+              Fazer Login
+            </a>
           </p>
         </form>
       </div>
