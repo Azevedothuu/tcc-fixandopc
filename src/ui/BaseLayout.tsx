@@ -23,28 +23,27 @@ function BaseLayout({ children }: BaseLayoutProps) {
         <img className="w-[90px]" src={Icon} alt="Logo" />
 
         <div>
-          
-        <Button
-    variant="outline"
-    className="text-white flex items-center gap-2"
-  >
-    <FaUsers className="text-lg" />
-    Comunidade
-  </Button>
-
+          <Button variant="outline"
+           className="
+          text-white 
+          flex
+          items-center
+          gap-2"
+          >
+            <FaUsers className="text-lg" />
+            Comunidade
+          </Button>
         </div>
 
         <div className="flex items-center space-x-5">
-        
           {user ? (
-            // usuário logado → mostra ícone + nome
+            /*        se usuário logado           */
             <div
               className="flex items-center space-x-2 cursor-pointer relative"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <FaUserCircle className="text-2xl" />
-              <span>{user}</span>  {/* aqui ta dando erro nessa linha*/}
-
+              <span>{user}</span> 
               {dropdownOpen && (
                 <div className="absolute top-full p-4 bg-white transition-transform ease-in-out right-0 mt-2 w-40 text-black rounded shadow-lg py-4 z-50">
                   <Button
@@ -63,10 +62,7 @@ function BaseLayout({ children }: BaseLayoutProps) {
             </div>
           ) : (
             // não logado → botão login
-            <Button
-              onClick={() => navigate('/login')}
-              variant="primary"
-            >
+            <Button onClick={() => navigate('/login')} variant="primary">
               Login
             </Button>
           )}
@@ -88,36 +84,60 @@ function BaseLayout({ children }: BaseLayoutProps) {
           ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}
         `}
       >
-        <button
-          onClick={() => setSidebarOpen(false)}
-          className="mb-4 cursor-pointer font-bold"
-        >
-          Fechar
-        </button>
         <ul className="space-y-2">
           <li>
-            <a
-              href="/"
-              className="block hover:bg-gray-700 p-2 rounded transition-colors duration-200"
+            <Button
+              variant="outline"
+              className="block hover:bg-gray-700 p-2 w-full rounded transition-colors duration-200"
+              onClick={() => {
+                navigate('/'); // fazer um window
+              }}
             >
               Home
-            </a>
+            </Button>
           </li>
           <li>
-            <a
-              href="/perfil"
-              className="block hover:bg-gray-700 p-2 rounded transition-colors duration-200"
+            <Button
+              variant="outline"
+              className="block hover:bg-gray-700 p-2 w-full rounded transition-colors duration-200"
+              onClick={() => {
+                navigate('*'); // fazer um window
+              }}
             >
               Perfil
-            </a>
+            </Button>
           </li>
           <li>
-            <a
-              href="/configuracoes"
-              className="block hover:bg-gray-700 p-2 rounded transition-colors duration-200"
+            <Button
+              variant="outline"
+              className="block hover:bg-gray-700 p-2 w-full rounded transition-colors duration-200"
+              onClick={() => {
+                navigate('*'); // fazer um window
+              }}
             >
               Configurações
-            </a>
+            </Button>
+            </li>
+            <li>
+            <Button
+              variant="outline"
+              className="block hover:bg-gray-700 p-2 w-full rounded transition-colors duration-200"
+              onClick={() => {
+                navigate('/AboutUs'); // rota
+              }}
+            >
+              Sobre Nós
+            </Button>
+            </li>
+            
+            <li>
+            <Button
+              onClick={() => setSidebarOpen(false)}
+              className="mt-4 cursor-pointer"
+              variant="danger"
+            >
+              Fechar
+            </Button>
           </li>
         </ul>
       </div>
@@ -142,4 +162,3 @@ function BaseLayout({ children }: BaseLayoutProps) {
 }
 
 export default BaseLayout;
-

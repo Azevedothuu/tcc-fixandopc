@@ -26,7 +26,7 @@ function Button({
   } else if (variant === "danger") {
     style = "bg-red-600 text-white hover:bg-red-700";
   } else if (variant === "outline") {
-    style = "border border-gray-400 text-gray-700 hover:bg-gray-100";
+    style = "border border-gray-400 text-white hover:bg-gray-600";
   }
 
   return (
