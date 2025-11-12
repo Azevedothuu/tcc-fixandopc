@@ -1,7 +1,7 @@
 import Icon from '../assets/Fixando-logo.png';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { FaBars, FaUserCircle, FaUsers } from 'react-icons/fa';
+import { FaBars, FaUserCircle } from 'react-icons/fa';
 import Button from './Button';
 import { useUser } from '../context/UserContext';
 
@@ -22,18 +22,7 @@ function BaseLayout({ children }: BaseLayoutProps) {
       <header className="bg-bg p-2 flex items-center justify-between shadow-md relative">
         <img className="w-[90px]" src={Icon} alt="Logo" />
 
-        <div>
-          <Button variant="outline"
-           className="
-          text-white 
-          flex
-          items-center
-          gap-2"
-          >
-            <FaUsers className="text-lg" />
-            Comunidade
-          </Button>
-        </div>
+        
 
         <div className="flex items-center space-x-5">
           {user ? (
@@ -93,7 +82,7 @@ function BaseLayout({ children }: BaseLayoutProps) {
                 navigate('/'); // fazer um window
               }}
             >
-              Home
+              Comunidade
             </Button>
           </li>
           <li>
@@ -101,7 +90,7 @@ function BaseLayout({ children }: BaseLayoutProps) {
               variant="outline"
               className="block hover:bg-gray-700 p-2 w-full rounded transition-colors duration-200"
               onClick={() => {
-                navigate('*'); // fazer um window
+                navigate('$'); // fazer um window
               }}
             >
               Perfil
@@ -112,10 +101,10 @@ function BaseLayout({ children }: BaseLayoutProps) {
               variant="outline"
               className="block hover:bg-gray-700 p-2 w-full rounded transition-colors duration-200"
               onClick={() => {
-                navigate('*'); // fazer um window
+                navigate('/Learn'); 
               }}
             >
-              Configurações
+              Aprenda IMC
             </Button>
             </li>
             <li>

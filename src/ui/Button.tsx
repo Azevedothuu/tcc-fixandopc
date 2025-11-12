@@ -1,7 +1,7 @@
 import React from "react";
 
 interface ButtonProps {
-  variant?: "primary" | "secondary" | "danger" | "outline";
+  variant?: "primary" | "secondary" | "danger" | "outline" | "feed";
   children: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
@@ -27,6 +27,8 @@ function Button({
     style = "bg-red-600 text-white hover:bg-red-700";
   } else if (variant === "outline") {
     style = "border border-gray-400 text-white hover:bg-gray-600";
+  } else if (variant === "feed") {
+    style = "border border-gray-400 text-black hover:bg-gray-200"
   }
 
   return (
