@@ -13,7 +13,8 @@ function Learn() {
             <Typography as="h1" variant="display" size="5xl" >
                 Aprenda IMC
             </Typography>                      
-            </div>                  
+            </div>              
+                
 
         </div>
         </BaseLayout>

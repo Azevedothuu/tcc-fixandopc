@@ -29,12 +29,7 @@ export default function Register() {
 
   const onSubmit = async (data: RegisterForm) => {
     try {
-      await registerUser({
-        username: data.username,
-        email: data.email,
-        password: data.password,
-      });
-
+      await registerUser(data);
       reset();
       navigate("/login");
     } catch (err: any) {
@@ -45,7 +40,7 @@ export default function Register() {
           message: err.response.data.message,
         });
       } else {
-        alert("Erro ao registrar. Tenta novamente.");
+        alert("Erro ao registrar. Tenta novamente mais tarde.");
       }
     }
   };
@@ -57,39 +52,56 @@ export default function Register() {
           <img className="w-32" src={Icon} alt="Logo" />
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+          {/* Username */}
+          <label className="block text-sm font-medium mb-1">Nome de usuário</label>
           <input
             type="text"
-            placeholder="Nome de usuário"
-            {...register("username", { required: "Campo obrigatório" })}
-            className="border p-2 rounded-md"
+            {...register("username", { required: "Nome de usuário é obrigatório" })}
+            className={`w-full p-2 border outline-none rounded-md mb-2 ${
+              errors.username ? "border-red-500" : "border-gray-300"
+            }`}
+            placeholder="Username"
           />
           {errors.username && (
-            <span className="text-red-500 text-sm">
-              {errors.username.message}
-            </span>
+            <p className="text-red-500 text-sm mb-3">{errors.username.message}</p>
           )}
 
+          {/* Email */}
+          <label className="block text-sm font-medium mb-1">Email</label>
           <input
             type="email"
-            placeholder="Email"
-            {...register("email", { required: "Campo obrigatório" })}
-            className="border p-2 rounded-md"
+            {...register("email", {
+              required: "Email é obrigatório",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Email inválido",
+              },
+            })}
+            className={`w-full p-2 border outline-none rounded-md mb-2 ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            }`}
+            placeholder="exemplo@email.com"
           />
           {errors.email && (
-            <span className="text-red-500 text-sm">{errors.email.message}</span>
+            <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>
           )}
 
+          {/* Password */}
+          <label className="block text-sm font-medium mb-1">Senha</label>
           <input
             type="password"
-            placeholder="Senha"
-            {...register("password", { required: "Campo obrigatório" })}
-            className="border p-2 rounded-md"
+            {...register("password", {
+              required: "Senha é obrigatória",
+              minLength: { value: 6, message: "A senha deve ter no mínimo 6 caracteres" },
+            })}
+            className={`w-full p-2 border outline-none rounded-md mb-2 ${
+              errors.password ? "border-red-500" : "border-gray-300"
+            }`}
+            placeholder="••••••••"
           />
           {errors.password && (
-            <span className="text-red-500 text-sm">
-              {errors.password.message}
-            </span>
+            <p className="text-red-500 text-sm mb-3">{errors.password.message}</p>
           )}
 
           <button
