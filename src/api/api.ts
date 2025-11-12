@@ -2,7 +2,7 @@ import axios from "axios";
 
 // cria conexão com o backend
 export const api = axios.create({
-  baseURL: "https://fixando-backend.vercel.app/", // luiz vc precisa mandar
+  baseURL: "https://fixando-backend.vercel.app/api", // luiz vc precisa mandar
   withCredentials: true,
 });
 
