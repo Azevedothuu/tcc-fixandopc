@@ -1,25 +1,59 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "https://fixando-backend.vercel.app/api",
-  withCredentials: true, // mantém cookies/session se o backend usar
+export const api = axios.create({
+  baseURL: "https://fixando-backend.vercel.app/api", // <- base /api
+  withCredentials: true,
 });
 
-// função de registro
-export const registerUser = async (userData: {
-  username: string;
-  email: string;
-  password: string;
-}) => {
+// ====================
+//  AUTENTICAÇÃO
+// ====================
+
+// Login
+export const loginUser = async (email: string, password: string) => {
+  const response = await api.post("/auth/login", { email, password });
+  localStorage.setItem("token", response.data.token);
+  api.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+  return response.data;
+};
+
+// Registrar
+export const registerUser = async (userData: any) => {
   const response = await api.post("/auth/register", userData);
   return response.data;
 };
 
-// função de login (pra já deixar pronta)
-export const loginUser = async (credentials: {
-  email: string;
-  password: string;
-}) => {
-  const response = await api.post("/auth/login", credentials);
+// ====================
+//  POSTS
+// ====================
+
+export const createPost = async (content: string, image?: File) => {
+  const formData = new FormData();
+  formData.append("content", content);
+  if (image) formData.append("image", image);
+
+  const response = await api.post("/posts", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return response.data;
+};
+
+export const getFeed = async () => {
+  const response = await api.get("/posts");
+  return response.data;
+};
+
+export const likePost = async (postId: string) => {
+  const response = await api.post(`/likes/${postId}`);
+  return response.data;
+};
+
+// ====================
+//  COMENTÁRIOS
+// ====================
+
+export const createComment = async (postId: string, text: string) => {
+  const response = await api.post(`/comments/${postId}`, { text });
   return response.data;
 };
