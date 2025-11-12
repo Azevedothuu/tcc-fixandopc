@@ -73,10 +73,11 @@ export default function PostFeed() {
 
   if (!user) {
     return (
-      <div className="text-center p-8">
-        <Typography as="h2" variant="sans" size="xl">
-          Faça login para postar algo na comunidade 😎
+      <div className="text-center p-8 bg-bg  rounded-lg">
+        <Typography as="h2" variant="sans" size="xl" className="text-white ">
+          Faça login para postar algo na comunidade 
         </Typography>
+        
       </div>
     );
   }

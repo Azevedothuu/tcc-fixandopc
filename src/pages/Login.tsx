@@ -2,7 +2,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Icon from "../assets/Fixando-logo.png";
 import Button from "../ui/Button";
-import { useUser } from "../context/UserContext"; // importa contexto
+import { useUser } from "../context/UserContext";
+import { loginUser } from "../api/api"; // importa da tua API
 
 interface LoginForm {
   email: string;
@@ -11,7 +12,8 @@ interface LoginForm {
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useUser(); // função do contexto
+  const { login } = useUser();
+
   const {
     register,
     handleSubmit,
@@ -23,40 +25,36 @@ function Login() {
     defaultValues: { email: "", password: "" },
   });
 
-  // Simula chamada de API
-  const fakeLogin = (data: LoginForm) =>
-    new Promise<{ ok: boolean; message?: string }>((resolve) => {
-      setTimeout(() => {
-        if (data.email === "user@test.com" && data.password === "123456") {
-          resolve({ ok: true });
-        } else {
-          resolve({ ok: false, message: "E-mail e/ou senha inválidas" });
-        }
-      }, 800);
-    });
-
   const onSubmit = async (data: LoginForm) => {
-  const res = await fakeLogin(data);
-  if (!res.ok) {
-    setError("email", { type: "server", message: res.message });
-    return;
-  }
+    try {
+      // Chama tua API real
+      const res = await loginUser(data.email, data.password);
 
-  reset();
+      // Pega o nome do usuário (ou usa "Usuário" se não tiver)
+      const userName = res?.user?.username || data.email.split("@")[0] || "Usuário";
 
-  
-  const userName = data.email ? data.email.split('@')[0] : "Usuário";
-  login(userName);
+      // Atualiza o contexto global
+      login(userName);
 
+      // Limpa o form
+      reset();
 
-  navigate("/"); // vai pra home
-};
-
+      // Redireciona pra home
+      navigate("/home");
+    } catch (err: any) {
+      console.error("Erro no login:", err);
+      if (err.response?.data?.message) {
+        setError("email", { type: "server", message: err.response.data.message });
+      } else {
+        alert("Erro ao fazer login. Tenta novamente.");
+      }
+    }
+  };
 
   return (
     <div className="h-screen w-full bg-bg text-light flex flex-col items-center justify-center">
       <div className="bg-white text-black p-8 rounded-xl shadow-md w-[350px]">
-        <div className="flex justify-center ">
+        <div className="flex justify-center mb-4">
           <img className="w-32" src={Icon} alt="Logo" />
         </div>
 
@@ -72,7 +70,7 @@ function Login() {
                 message: "Email inválido",
               },
             })}
-            className={`w-full p-2 border border-gray-300 outline-none rounded-md mb-2 ${
+            className={`w-full p-2 border outline-none rounded-md mb-2 ${
               errors.email ? "border-red-500" : "border-gray-300"
             }`}
             placeholder="exemplo@email.com"
@@ -110,13 +108,10 @@ function Login() {
           </Button>
 
           <p className="text-gray-500 text-xs mt-3 text-center">
-            Não tem uma Conta?{" "}
+            Não tem uma conta?{" "}
             <a className="underline" href="/register">
-              Clique Aqui.
+              Clique aqui.
             </a>
-          </p>
-          <p className="text-gray-500 text-xs mt-3 text-center">
-            Teste com: user@test.com / 123456
           </p>
         </form>
       </div>
