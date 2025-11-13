@@ -1,34 +1,34 @@
-import React from "react";
+import React from 'react';
 
 interface ButtonProps {
-  variant?: "primary" | "secondary" | "danger" | "outline" | "feed";
+  variant?: 'primary' | 'secondary' | 'danger' | 'outline' | 'feed';
   children: React.ReactNode;
   onClick?: () => void;
-  type?: "button" | "submit" | "reset";
+  type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   className?: string;
 }
 
 function Button({
-  variant = "primary",
+  variant = 'primary',
   children,
   onClick,
-  type = "button",
+  type = 'button',
   disabled = false,
-  className = "",
+  className = '',
 }: ButtonProps) {
-  let style = "";
+  let style = '';
 
-  if (variant === "primary") {
-    style = "bg-orange text-white hover:bg-orange-600";
-  } else if (variant === "secondary") {
-    style = "bg-blue-600 text-white hover:bg-blue-700";
-  } else if (variant === "danger") {
-    style = "bg-red-600 text-white hover:bg-red-700";
-  } else if (variant === "outline") {
-    style = "border border-gray-400 text-white hover:bg-gray-600";
-  } else if (variant === "feed") {
-    style = "border border-gray-400 text-black hover:bg-gray-200"
+  if (variant === 'primary') {
+    style = 'bg-orange text-white hover:bg-orange-600';
+  } else if (variant === 'secondary') {
+    style = 'bg-blue-600 text-white hover:bg-blue-700';
+  } else if (variant === 'danger') {
+    style = 'bg-red-600 text-white hover:bg-red-700';
+  } else if (variant === 'outline') {
+    style = 'border border-gray-400 text-white hover:bg-gray-600';
+  } else if (variant === 'feed') {
+    style = 'border border-gray-400 text-black hover:bg-gray-200';
   }
 
   return (

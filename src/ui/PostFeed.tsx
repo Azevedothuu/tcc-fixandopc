@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import axios from "axios";
+import { useState, useRef, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import Button from "./Button";
 import Typography from "./Typography";
@@ -9,6 +10,7 @@ interface Post {
   content: string;
   image?: string;
   likes: number;
+  likedBy: string[];
   comments: Comment[];
 }
 
@@ -25,7 +27,15 @@ export default function PostFeed() {
   const [image, setImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Lida com upload da imagem
+  //  Carregar posts 
+
+  useEffect(() => {
+    axios
+      .get("https://seu-backend.vercel.app/api/posts")
+      .then((res) => setPosts(res.data))
+      .catch((err) => console.error("Erro ao carregar posts:", err));
+  }, []);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -40,51 +50,66 @@ export default function PostFeed() {
     reader.readAsDataURL(file);
   };
 
-  // Cria um novo post
-  const handlePost = () => {
-    if (!content.trim()) return;
-    const newPost: Post = {
-      id: Date.now(),
-      user: user || "Anônimo",
-      content,
-      image: image || undefined,
-      likes: 0,
-      comments: [],
-    };
-    setPosts([newPost, ...posts]);
-    setContent("");
-    setImage(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  //  POST ~ backend 
+  const handlePost = async () => {
+    if (!content.trim() || !user) return;
+
+    try {
+      const res = await axios.post("https://seu-backend.vercel.app/api/posts", {
+        user,
+        content,
+        image,
+      });
+
+      setPosts([res.data, ...posts]); // adiciona o novo post retornado
+      setContent("");
+      setImage(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err) {
+      console.error("Erro ao criar post:", err);
+    }
   };
 
-  // Curtir post
-  const handleLike = (id: number) => {
-    setPosts(posts.map(p => p.id === id ? { ...p, likes: p.likes + 1 } : p));
+  //  Curtir post
+  const handleLike = async (id: number) => {
+    if (!user) return;
+
+    try {
+      await axios.post(`https://seu-backend.vercel.app/api/posts/${id}/like`, { user });
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? { ...p, likes: p.likes + 1, likedBy: [...p.likedBy, user] }
+            : p
+        )
+      );
+    } catch (err) {
+      console.error("Erro ao curtir post:", err);
+    }
   };
 
-  // Comentar post
   const handleComment = (id: number, text: string) => {
-    setPosts(posts.map(p => 
-      p.id === id 
-        ? { ...p, comments: [...p.comments, { id: Date.now(), user: user || "Anônimo", text }] } 
-        : p
-    ));
+    setPosts(
+      posts.map((p) =>
+        p.id === id
+          ? { ...p, comments: [...p.comments, { id: Date.now(), user: user || "Anônimo", text }] }
+          : p
+      )
+    );
   };
 
   if (!user) {
     return (
-      <div className="text-center p-8 bg-bg  rounded-lg">
-        <Typography as="h2" variant="sans" size="xl" className="text-white ">
-          Faça login para postar algo na comunidade 
+      <div className="text-center p-8 bg-bg rounded-lg">
+        <Typography as="h2" variant="sans" size="xl" className="text-white">
+          Faça login para postar algo na comunidade
         </Typography>
-        
       </div>
     );
   }
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
-      {/* Área de criar post */}
       <div className="bg-white text-black p-4 rounded-xl shadow-md">
         <textarea
           className="w-full border rounded-md p-2 outline-none resize-none"
@@ -93,9 +118,7 @@ export default function PostFeed() {
           maxLength={300}
           onChange={(e) => setContent(e.target.value)}
         />
-        {image && (
-          <img src={image} alt="preview" className="mt-2 rounded-md max-h-60 object-cover" />
-        )}
+        {image && <img src={image} alt="preview" className="mt-2 rounded-md max-h-60 object-cover" />}
         <div className="flex justify-between items-center mt-3">
           <div className="flex gap-3">
             <input
@@ -105,21 +128,16 @@ export default function PostFeed() {
               onChange={handleImageUpload}
               className="hidden"
             />
-            <Button
-              variant="feed"
-              onClick={() => fileInputRef.current?.click()}
-            >
+            <Button variant="feed" onClick={() => fileInputRef.current?.click()}>
               Anexar Imagem
             </Button>
           </div>
-
           <Button variant="primary" onClick={handlePost} disabled={!content.trim()}>
             Postar
           </Button>
         </div>
       </div>
 
-      {/* Lista de posts */}
       <div className="space-y-4">
         {posts.length === 0 && (
           <Typography as="p" variant="sans" size="lg" className="text-center text-gray-500">
@@ -136,17 +154,18 @@ export default function PostFeed() {
               <Button
                 onClick={() => handleLike(post.id)}
                 variant="feed"
-                
+                disabled={post.likedBy.includes(user!)}
               >
                 ❤️ {post.likes}
               </Button>
             </div>
-            <Typography as="p" variant="sans" size="base">{post.content}</Typography>
+            <Typography as="p" variant="sans" size="base">
+              {post.content}
+            </Typography>
             {post.image && (
               <img src={post.image} alt="post" className="mt-2 rounded-md max-h-72 object-cover" />
             )}
 
-            {/* comentários */}
             <div className="mt-3">
               <CommentSection postId={post.id} comments={post.comments} onComment={handleComment} />
             </div>
@@ -157,7 +176,6 @@ export default function PostFeed() {
   );
 }
 
-// Subcomponente pra comentários
 function CommentSection({
   postId,
   comments,

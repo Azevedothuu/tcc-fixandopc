@@ -22,8 +22,6 @@ function BaseLayout({ children }: BaseLayoutProps) {
       <header className="bg-bg p-2 flex items-center justify-between shadow-md relative">
         <img className="w-[90px]" src={Icon} alt="Logo" />
 
-        
-
         <div className="flex items-center space-x-5">
           {user ? (
             /*        se usuário logado           */
@@ -32,7 +30,7 @@ function BaseLayout({ children }: BaseLayoutProps) {
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <FaUserCircle className="text-2xl" />
-              <span>{user}</span> 
+              <span>{user}</span>
               {dropdownOpen && (
                 <div className="absolute top-full p-4 bg-white transition-transform ease-in-out right-0 mt-2 w-40 text-black rounded shadow-lg py-4 z-50">
                   <Button
@@ -101,13 +99,13 @@ function BaseLayout({ children }: BaseLayoutProps) {
               variant="outline"
               className="block hover:bg-gray-700 p-2 w-full rounded transition-colors duration-200"
               onClick={() => {
-                navigate('/Learn'); 
+                navigate('/Learn');
               }}
             >
               Aprenda IMC
             </Button>
-            </li>
-            <li>
+          </li>
+          <li>
             <Button
               variant="outline"
               className="block hover:bg-gray-700 p-2 w-full rounded transition-colors duration-200"
@@ -117,9 +115,9 @@ function BaseLayout({ children }: BaseLayoutProps) {
             >
               Sobre Nós
             </Button>
-            </li>
-            
-            <li>
+          </li>
+
+          <li>
             <Button
               onClick={() => setSidebarOpen(false)}
               className="mt-4 cursor-pointer"
