@@ -1,8 +1,15 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://fixando-backend.vercel.app/api", // <- base /api
-  withCredentials: true,
+  baseURL: "https://fixando-backend.vercel.app/api" // <- base /api
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 // ====================
