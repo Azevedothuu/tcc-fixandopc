@@ -70,23 +70,22 @@ export default function PostFeed() {
 
   // Curtir post
   const handleLike = async (postId: number) => {
-    if (!user) return;
+  if (!user) return;
 
-    try {
-      const res = await api.post(`/posts/${postId}/like`);
-      setPosts((prev) =>
-        prev.map((p) =>
-          p.id === postId
-            ? { ...p, likes: p.likes + 1, likedBy: [...p.likedBy, user] }
-            : p
-        )
-      );
-    } catch (err) {
-      console.error("Erro ao curtir post:", err);
-    }
-  await api.post("/posts", { content, image });
+  try {
+    await api.post(`/posts/${postId}/like`); // não precisa de res se não vai usar
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId
+          ? { ...p, likes: p.likes + 1, likedBy: [...p.likedBy, user] }
+          : p
+      )
+    );
+  } catch (err) {
+    console.error("Erro ao curtir post:", err);
+  }
+};
 
-  };
 
   // Comentar post
   const handleComment = (postId: number, text: string) => {
