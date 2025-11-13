@@ -29,12 +29,12 @@ export default function PostFeed() {
 
   //  Carregar posts 
 
-  {/*useEffect(() => {
+  useEffect(() => {
     axios
       .get("https://fixando-backend.vercel.app/api/posts")
       .then((res) => setPosts(res.data))
       .catch((err) => console.error("Erro ao carregar posts:", err));
-  }, []);*/}
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
