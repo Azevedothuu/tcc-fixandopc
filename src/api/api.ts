@@ -35,12 +35,18 @@ export const registerUser = async (userData: any) => {
 // ====================
 
 export const createPost = async (content: string, image?: File) => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Usuário não está logado");
+
   const formData = new FormData();
   formData.append("content", content);
   if (image) formData.append("image", image);
 
   const response = await api.post("/posts", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Authorization": `Bearer ${token}`, // <- aqui envia o token
+    },
   });
 
   return response.data;
