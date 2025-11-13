@@ -1,5 +1,4 @@
 import {} from 'react';
-import DevF from '../assets/Arthur-person.png';
 import Typography from './Typography';
 
 function Team() {

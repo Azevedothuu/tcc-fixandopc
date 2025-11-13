@@ -40,7 +40,7 @@ function Login() {
       reset();
 
       // Redireciona pra home
-      navigate("/home");
+      navigate("/");
     } catch (err: any) {
       console.error("Erro no login:", err);
       if (err.response?.data?.message) {
