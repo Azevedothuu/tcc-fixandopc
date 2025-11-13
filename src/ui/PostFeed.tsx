@@ -1,8 +1,8 @@
-import axios from "axios";
 import { useState, useRef, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import Button from "./Button";
 import Typography from "./Typography";
+import { api } from "../api/api"; // ajusta o caminho conforme teu projeto
 
 interface Post {
   id: number;
@@ -24,18 +24,23 @@ export default function PostFeed() {
   const { user } = useUser();
   const [posts, setPosts] = useState<Post[]>([]);
   const [content, setContent] = useState("");
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  //  Carregar posts 
-
+  // Carregar posts
   useEffect(() => {
-    axios
-      .get("https://fixando-backend.vercel.app/api/posts")
-      .then((res) => setPosts(res.data))
-      .catch((err) => console.error("Erro ao carregar posts:", err));
+    const fetchPosts = async () => {
+      try {
+        const res = await api.get("/posts");
+        setPosts(res.data);
+      } catch (err) {
+        console.error("Erro ao carregar posts:", err);
+      }
+    };
+    fetchPosts();
   }, []);
 
+  // Upload de imagem
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -45,23 +50,16 @@ export default function PostFeed() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => setImage(reader.result as string);
-    reader.readAsDataURL(file);
+    setImage(file);
   };
 
-  //  POST ~ backend 
+  // Criar post
   const handlePost = async () => {
     if (!content.trim() || !user) return;
 
     try {
-      const res = await axios.post("https://fixando-backend.vercel.app/api/posts", {
-        user,
-        content,
-        image,
-      });
-
-      setPosts([res.data, ...posts]); // adiciona o novo post retornado
+      const res = await api.post("/posts", { content, image });
+      setPosts([res.data, ...posts]);
       setContent("");
       setImage(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -70,15 +68,15 @@ export default function PostFeed() {
     }
   };
 
-  //  Curtir post
-  const handleLike = async (id: number) => {
+  // Curtir post
+  const handleLike = async (postId: number) => {
     if (!user) return;
-//https://fixando-backend.vercel.app/api
+
     try {
-      await axios.post(`https://fixando-backend.vercel.app/api/posts/${id}/like`, { user });
+      const res = await api.post(`/posts/${postId}/like`);
       setPosts((prev) =>
         prev.map((p) =>
-          p.id === id
+          p.id === postId
             ? { ...p, likes: p.likes + 1, likedBy: [...p.likedBy, user] }
             : p
         )
@@ -86,12 +84,15 @@ export default function PostFeed() {
     } catch (err) {
       console.error("Erro ao curtir post:", err);
     }
+  await api.post("/posts", { content, image });
+
   };
 
-  const handleComment = (id: number, text: string) => {
-    setPosts(
-      posts.map((p) =>
-        p.id === id
+  // Comentar post
+  const handleComment = (postId: number, text: string) => {
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId
           ? { ...p, comments: [...p.comments, { id: Date.now(), user: user || "Anônimo", text }] }
           : p
       )
@@ -118,7 +119,7 @@ export default function PostFeed() {
           maxLength={300}
           onChange={(e) => setContent(e.target.value)}
         />
-        {image && <img src={image} alt="preview" className="mt-2 rounded-md max-h-60 object-cover" />}
+        {image && <p className="text-sm mt-1">Imagem selecionada: {image.name}</p>}
         <div className="flex justify-between items-center mt-3">
           <div className="flex gap-3">
             <input

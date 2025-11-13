@@ -1,13 +1,16 @@
 import axios from "axios";
 
+// Cria instância do axios
 export const api = axios.create({
-  baseURL: "https://fixando-backend.vercel.app/api" // <- base /api
+  baseURL: "https://fixando-backend.vercel.app/api", // base da API
+  withCredentials: true, // importante para enviar cookies se houver
 });
 
+// Interceptor para enviar token automaticamente
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token"); // pega token do localStorage
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`; // adiciona no header
   }
   return config;
 });
@@ -19,8 +22,7 @@ api.interceptors.request.use((config) => {
 // Login
 export const loginUser = async (email: string, password: string) => {
   const response = await api.post("/auth/login", { email, password });
-  localStorage.setItem("token", response.data.token);
-  api.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+  localStorage.setItem("token", response.data.token); // salva token
   return response.data;
 };
 
@@ -35,17 +37,14 @@ export const registerUser = async (userData: any) => {
 // ====================
 
 export const createPost = async (content: string, image?: File) => {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Usuário não está logado");
-
   const formData = new FormData();
   formData.append("content", content);
   if (image) formData.append("image", image);
 
+  // Token já será enviado pelo interceptor
   const response = await api.post("/posts", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
-      "Authorization": `Bearer ${token}`, // <- aqui envia o token
     },
   });
 
