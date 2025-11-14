@@ -73,7 +73,7 @@ export default function PostFeed() {
   if (!user) return;
 
   try {
-    await api.post(`/posts/${postId}/like`); // não precisa de res se não vai usar
+    await api.post(`/posts/${postId}/like`);
     setPosts((prev) =>
       prev.map((p) =>
         p.id === postId

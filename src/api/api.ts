@@ -1,47 +1,38 @@
 import axios from "axios";
 
-// Cria instância do axios
 export const api = axios.create({
-  baseURL: "https://fixando-backend.vercel.app/api", // base da API
-  withCredentials: true, // importante para enviar cookies se houver
+  baseURL: "https://fixando-backend.vercel.app/api",
+  withCredentials: true,
 });
 
-// Interceptor para enviar token automaticamente
+// Envia token automaticamente
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token"); // pega token do localStorage
+  const token = localStorage.getItem("token");
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`; // adiciona no header
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// ====================
-//  AUTENTICAÇÃO
-// ====================
-
-// Login
+// LOGIN
 export const loginUser = async (email: string, password: string) => {
   const response = await api.post("/auth/login", { email, password });
-  localStorage.setItem("token", response.data.token); // salva token
+  localStorage.setItem("token", response.data.token);
   return response.data;
 };
 
-// Registrar
+// REGISTER
 export const registerUser = async (userData: any) => {
   const response = await api.post("/auth/register", userData);
   return response.data;
 };
 
-// ====================
-//  POSTS
-// ====================
-
+// CREATE POST
 export const createPost = async (content: string, image?: File) => {
   const formData = new FormData();
   formData.append("content", content);
   if (image) formData.append("image", image);
 
-  // Token já será enviado pelo interceptor
   const response = await api.post("/posts", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -51,20 +42,19 @@ export const createPost = async (content: string, image?: File) => {
   return response.data;
 };
 
+// FEED
 export const getFeed = async () => {
   const response = await api.get("/posts");
   return response.data;
 };
 
+// LIKE
 export const likePost = async (postId: string) => {
   const response = await api.post(`/likes/${postId}`);
   return response.data;
 };
 
-// ====================
-//  COMENTÁRIOS
-// ====================
-
+// COMMENT
 export const createComment = async (postId: string, text: string) => {
   const response = await api.post(`/comments/${postId}`, { text });
   return response.data;
